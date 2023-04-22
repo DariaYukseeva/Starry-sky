@@ -10,22 +10,14 @@ body {
 
 .star {
     
-    width: 6px;
-    height: 6px;
+    
     border-radius: 50px;
     position: absolute;
     opacity:0;
     transition: opacity 3s ease-out;
 }
 
-.small-star {
-    width: 3px;
-    height: 3px;
-    border-radius: 30px;
-    position: absolute;
-    opacity:0;
-    transition: opacity 3s ease-out;
-}
+
 @keyframes grow {
     from {
       box-shadow: 0px 0px 1em #fdffe6;

@@ -1,10 +1,11 @@
 const COLORS = ['#fffd98', '#f7f43f', '#fffed0', '#fffb00'];
+const starSizeForComputer = ['3px', '4px', '5px', '6px'];
+const starSizeForMobile = ['1px', '2px', '3px', '4px'];
 const body = document.querySelector('body');
 
 let bodyWidth = body.offsetWidth;
 let bodyHeight = body.offsetHeight;
 let timerId;
-let timerIdSmall;
 let timerIdTwinkle;
 let randomYCoordinate = 0;
 let randomXCoordinate = 0;
@@ -22,6 +23,12 @@ function getRandomYCoordinate() {
     return `${randomYCoordinate}px`;
 }
 
+// Вывбираем рандомный размер из заданного массива
+function getRandomSize(arr) {
+    let randomSize = arr[Math.floor(Math.random() * (arr.length))];
+    return randomSize;
+}
+
 // выбираем рандомно цвет из заданного массива цветов
 function getRandomColor() {
     let randomColor = COLORS[Math.floor(Math.random() * (COLORS.length))];
@@ -35,7 +42,13 @@ function getRandomStar(arr) {
     return arr[randomStarIndex];
 }
 
-// добавляем рандомный цвет и рандомное положение на экране добавляющейся звезде, меняем прозрачность на непрозрачную
+// задаём ширину и высоту звезды
+function setStarSize(size) {
+    body.lastElementChild.style.width = size;
+    body.lastElementChild.style.height = size;
+}
+
+// добавляем рандомный цвет и рандомное положение на экране создающейся звезде, меняем прозрачность на непрозрачную
 function addElementsStyles() {
     
     body.lastElementChild.style.top = getRandomYCoordinate();
@@ -49,9 +62,18 @@ function addElementsStyles() {
 function createNewStar() {
     timerId = setInterval(() => {
         const stars = document.querySelectorAll('.star');
-        // если количество звёзд на экране меньше 133, то создаём новую, присваиваем ей стили через setTimeout
-        if (stars.length < 133) {     
+        // если количество звёзд на экране меньше 150, то создаём новую. Если ширина экрана больше 1000px, то размер звезды выбирается из массива "юольших звёзд", если меньше - то из массива "маленьких". Присваиваем ей стили через setTimeout
+                
+        if (stars.length < 150) {     
             body.insertAdjacentHTML('beforeend', '<div class="star"></div>');
+            if (bodyWidth > 1000) {
+                let starRandomSizeForComputer = getRandomSize(starSizeForComputer);
+                setStarSize(starRandomSizeForComputer);
+            }
+            else {
+                let starRandomSizeForMobile = getRandomSize(starSizeForMobile);
+                setStarSize(starRandomSizeForMobile);
+            }
             setTimeout(function () {
                 addElementsStyles();
             }, 10);
@@ -62,7 +84,7 @@ function createNewStar() {
                 turnStarTwinkle(randomElement);
             }
         }
-        // если количество звёзд на экране становится равно 133, то удаляем рандомную звезду
+        // если количество звёзд на экране становится равно 150, то удаляем рандомную звезду
         else {
             body.removeChild(getRandomStar(stars));
             
@@ -71,23 +93,6 @@ function createNewStar() {
     }, 1500);
 }
 
-// каждые 2,5 секунды запускаем интервал, генерирующий новую маленькую звезду. 
-function createNewSmallStar() {
-    timerIdSmall = setInterval(() => {
-        const smallStars = document.querySelectorAll('.small-star');
-        // если маленьких звёзд на экране меньше 79, то добавляем новую и стили для неё
-        if (smallStars.length < 79) {     
-            body.insertAdjacentHTML('beforeend', '<div class="small-star"></div>');
-            setTimeout(function () {
-                addElementsStyles();
-            }, 10);
-        }  
-        // если маленьких звёзд 79, то удаляем 1 рандомную
-        else {
-            body.removeChild(getRandomStar(smallStars));
-        }
-    }, 2500);
-}
 
 // подключаем стиль с анимацией мерцания
 function turnStarTwinkle(element) {
@@ -96,18 +101,15 @@ function turnStarTwinkle(element) {
 
 // запускаем функции создания звёзд
 createNewStar();
-createNewSmallStar();
 
 // по клику мыши на body прекращаем создание новых звёзд, если переменная glowOn true (звёзды сейчас генерятся), и запускаем создание новых звёзд, если glowOn === false (то есть, мы были на паузе)
 body.addEventListener('click', () => {
     if (glowOn === true) {
         clearInterval(timerId);
-        clearInterval(timerIdSmall);
         glowOn = false;
     }
     else {
         createNewStar();
-        createNewSmallStar();
         glowOn = true;
     }
     
